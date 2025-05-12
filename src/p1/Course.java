@@ -10,8 +10,8 @@ public class Course {
 	private static int compteur = 1;  // compteur global pour toutes les instances
 	private String id; 
     private Utilisateur chauffeur;
-    private List<Utilisateur> passagers;
-    private Itineraire itineraire;
+    public List<Utilisateur> passagers;
+    public Itineraire itineraire;
     private TypeCourse typeCourse;
     private Statut statut;
     protected int nombrePlacesDisponibles;
@@ -55,6 +55,10 @@ public class Course {
     public int placesRestantes() {
         return nombrePlacesDisponibles - passagers.size();
     }
+    public TypeCourse getTypeCourse() {
+        return typeCourse;
+    }
+    
 
     public boolean correspond(Utilisateur passager) {
         Profil profilPassager = passager.getProfil();
