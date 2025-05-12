@@ -48,6 +48,13 @@ public class Administration {
         administrateurs.remove(u);
         utilisateurs.remove(u);
     }
+    public List<Course> rechercherCourseParItineraire(String depart, String arrivee) {
+        return courses.stream()
+            .filter(c -> c.getStatut() == Statut.EN_COURS) // Seulement les courses disponibles
+            .filter(c -> c.getItineraire().getPointDepart().equalsIgnoreCase(depart.trim()))
+            .filter(c -> c.getItineraire().getPointArrivee().equalsIgnoreCase(arrivee.trim()))
+            .collect(Collectors.toList());
+    }
 
     public Utilisateur rechercherUtilisateurParNom(String nom) {
         List<Utilisateur> tous = getTousUtilisateurs();
