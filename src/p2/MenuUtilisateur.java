@@ -1,9 +1,13 @@
 package p2;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 import monprojet.enums.DisponibiliteType;
 import monprojet.enums.JourSemaine;
+import monprojet.enums.Statut;
 import monprojet.enums.TypeCourse;
 import p0.Utilisateur;
 import p1.Administration;
@@ -33,7 +37,7 @@ public class MenuUtilisateur {
 
             switch (choix) {
                 case 1:
-                    utilisateur.afficherProfil();;
+                  utilisateur.afficherProfil();;
                     break;
 
                 case 2:
@@ -82,23 +86,52 @@ public class MenuUtilisateur {
                         Itineraire itineraire = new Itineraire(depart, arrivee);
                         Course course = new Course(utilisateur, itineraire, type, places);
                         utilisateur.getHistorique().ajouterCourse(course);
+                        admin.ajouterCourse(course); // Ajouter cette ligne
                         System.out.println("Course créée avec succès !");
                     }
-                    break;
                 
-
-                case 5:
-                // Rechercher une course en tant que passager
-                 System.out.println("Entrez le point de départ de la recherche :");
-                scanner.nextLine(); // Pour consommer la nouvelle ligne laissée par nextInt
-                String pointDepart = scanner.nextLine();
-
-                System.out.println("Entrez le point d'arrivée de la recherche :");
-                String pointArrivee = scanner.nextLine();
-
-                // Recherche de la course dans le planning
-                utilisateur.getPlanning().rechercherCourseParCritere(pointDepart, pointArrivee);  // Recherche dans le planning de l'utilisateur
                 break;
+                case 5:
+                System.out.print("🔍 Entrez le point de départ : ");
+                String pointDepart = scanner.nextLine().trim();
+            
+                System.out.print("🔍 Entrez le point d'arrivée : ");
+                String pointArrivee = scanner.nextLine().trim();
+            
+                if (pointDepart.isEmpty() || pointArrivee.isEmpty()) {
+                    System.out.println("❌ Les champs de départ et d'arrivée ne doivent pas être vides.");
+                    break;
+                }
+            
+                List<Course> resultats = new ArrayList<>();
+            
+                for (Course c : admin.getCourses()) {
+                    if (
+                        c.getStatut() == Statut.EN_COURS &&
+                        c.getItineraire().getPointDepart().equalsIgnoreCase(pointDepart) &&
+                        c.getItineraire().getPointArrivee().equalsIgnoreCase(pointArrivee) &&
+                        c.placesRestantes() > 0
+                    ) {
+                        resultats.add(c);
+                    }
+                }
+            
+                if (resultats.isEmpty()) {
+                    System.out.println("🚫 Aucune course disponible pour ces critères.");
+                } else {
+                    System.out.println("\n✅ --- Courses disponibles ---");
+                    for (Course c : resultats) {
+                        System.out.println("🔸 ID : " + c.getId());
+                        System.out.println("👤 Chauffeur : " + c.getChauffeur().getNom());
+                        System.out.println("🚗 Type : " + c.getTypeCourse());
+                        System.out.println("📍 Départ : " + c.getItineraire().getPointDepart());
+                        System.out.println("🏁 Arrivée : " + c.getItineraire().getPointArrivee());
+                        System.out.println("🪑 Places restantes : " + c.placesRestantes());
+                        System.out.println("----------------------------");
+                    }
+                }
+                break;
+                        
 
  case 6:
     boolean continuerGestion = true;
