@@ -12,7 +12,8 @@ public class Administration {
     private List<ATS> ats;
     private List<Utilisateur> administrateurs;
     private List<Course> courses;
-    
+    private Set<String> listeNoire;
+
     private static final String ADMIN_USERNAME = "admin";
     private static final String ADMIN_PASSWORD = "admin123";
 
@@ -27,10 +28,16 @@ public class Administration {
         this.administrateurs = new ArrayList<>();
         this.courses = new ArrayList<>();
         this.utilisateurs = new ArrayList<>();
+        this.listeNoire = new HashSet<>();
     }
 
 
     public boolean ajouterUtilisateur(Utilisateur u) {
+        if (listeNoire.contains(u.getMatricule())) {
+            System.out.println(" L'utilisateur avec le matricule " + u.getMatricule() + " est banni et ne peut pas être inscrit.");
+            return false;
+        }
+
         if (u instanceof Etudiant) etudiants.add((Etudiant) u);
         else if (u instanceof Enseignant) enseignants.add((Enseignant) u);
         else if (u instanceof ATS) ats.add((ATS) u);
@@ -38,9 +45,28 @@ public class Administration {
         return true;
     }
     
-    
-    
-    
+    public boolean banirUtilisateur(String matricule) {
+        Utilisateur u = rechercherUtilisateurParMatricule(matricule);
+        if (u != null) {
+            supprimerUtilisateur(u);
+            listeNoire.add(matricule);
+            return true;
+        } else {
+            System.out.println("Aucun utilisateur trouvé avec le matricule: " + matricule);
+            return false;
+        }
+    }
+    public void afficherListeNoire() {
+        System.out.println(" Liste noire des utilisateurs bannis :");
+        if (listeNoire.isEmpty()) {
+            System.out.println("Aucun utilisateur banni.");
+            return;}
+        for (String matricule : listeNoire) {
+            Utilisateur u = rechercherUtilisateurParMatricule(matricule);
+            if (u != null) {
+                System.out.println("- " + u.getNom() + " (Matricule : " + matricule + ")");
+            } else {
+                System.out.println("- Utilisateur inconnu (Matricule : " + matricule + ")");}}}
     public void supprimerUtilisateur(Utilisateur u) {
         etudiants.remove(u);
         enseignants.remove(u);
