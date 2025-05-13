@@ -1,22 +1,12 @@
 package p2;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
-import java.util.stream.Collectors;
-
-import monprojet.enums.DisponibiliteType;
-import monprojet.enums.JourSemaine;
-import monprojet.enums.Statut;
-import monprojet.enums.TypeCourse;
+import monprojet.enums.*;
 import p0.Utilisateur;
-import p1.Administration;
-import p1.Course;
-import p1.Itineraire;
+import p1.*;
 
 public class MenuUtilisateur {
-
-
         public static void menuUtilisateur(Utilisateur utilisateur, Administration admin, Scanner scanner) {
         boolean continuer = true;
 
@@ -40,21 +30,76 @@ public class MenuUtilisateur {
                   utilisateur.afficherProfil();;
                     break;
 
-                case 2:
-                System.out.println("Modifier mon profil");
-                System.out.print("Modifier le nom (laisser vide pour ignorer) : ");
-                String nom = scanner.nextLine();
-                System.out.print("Modifier le prénom (laisser vide pour ignorer) : ");
-                String prenom = scanner.nextLine();
-                // Modification du profil avec les nouveaux paramètres
-                utilisateur.modifierProfilPersonnel(nom, prenom, null);
-                break;
+                    case 2:
+                    System.out.println("Modifier mon profil");
+                
+                    System.out.print("Modifier le nom (laisser vide pour ignorer) : ");
+                    String nom = scanner.nextLine();
+                    System.out.print("Modifier le prénom (laisser vide pour ignorer) : ");
+                    String prenom = scanner.nextLine();
+                    utilisateur.modifierProfilPersonnel(nom, prenom, null);
+                
+                    System.out.print("Souhaitez-vous modifier votre profil dynamique ? (1-Oui / 2-Non) : ");
+                    String reponse = scanner.nextLine();
+                
+                    if (reponse.equals("1")) {
+                        // Choix du statut
+                        System.out.println("Choisissez un statut :");
+                        System.out.println("1. CHAUFFEUR");
+                        System.out.println("2. PASSAGER");
+                        System.out.print("Votre choix (laisser vide pour ignorer) : ");
+                        String statutChoix = scanner.nextLine();
+                        StatutUser statut = null;
+                        if (statutChoix.equals("1")) statut = StatutUser.chauffer;
+                        else if (statutChoix.equals("2")) statut = StatutUser.passager;
+                
+                        // Choix du type de course
+                        System.out.println("Choisissez un type de course :");
+                        System.out.println("1. ALLER");
+                        System.out.println("2. RETOUR");
+                        System.out.println("3. ALLER_RETOUR");
+                        System.out.print("Votre choix (laisser vide pour ignorer) : ");
+                        String typeChoix = scanner.nextLine();
+                        TypeCourse typeCourse = null;
+                        if (typeChoix.equals("1")) typeCourse = TypeCourse.ALLER_SIMPLE;
+                        else if (typeChoix.equals("2")) typeCourse = TypeCourse.RETOUR_SIMPLE;
+                        else if (typeChoix.equals("3")) typeCourse = TypeCourse.ALLER_RETOUR;
+                
+                        // Départ et arrivée
+                        System.out.print("Départ (laisser vide pour ignorer) : ");
+                        String depart = scanner.nextLine();
+                        System.out.print("Arrivée (laisser vide pour ignorer) : ");
+                        String arrivee = scanner.nextLine();
+                        Itineraire itineraire = null;
+                        if (!depart.isEmpty() || !arrivee.isEmpty()) {
+                            itineraire = new Itineraire(depart, arrivee);
+                        }
+                
+                        // Préférences
+                        System.out.print("Souhaitez-vous définir vos préférences ? (1-Oui / 2-Non) : ");
+                        String repPref = scanner.nextLine();
+                        Preferences preferences = null;
+                
+                        if (repPref.equals("1")) {
+                            preferences = new Preferences();
+                            for (PreferenceType type : PreferenceType.values()) {
+                                System.out.print("Acceptez-vous la préférence " + type + " ? (1-Oui / 2-Non) : ");
+                                String rep = scanner.nextLine();
+                                preferences.ajouterPreference(type, rep);
+                            }
+                        }
+                
+                        // Suppression de la disponibilité
+                
+                        utilisateur.getProfil().modifierProfilDynamique(statut, typeCourse, itineraire, preferences, null);
+                        System.out.println("Profil dynamique mis à jour.");
+                    }
+                    break;
                 
 
                 case 3:
                 utilisateur.afficherHistorique(); 
                     break;
-
                     case 4:
                     System.out.print("Lieu de départ : ");
                     String depart = scanner.nextLine();
@@ -70,8 +115,7 @@ public class MenuUtilisateur {
                     System.out.println("3. ALLER_RETOUR");
                     System.out.print("Choix : ");
                     int typeChoix = scanner.nextInt();
-                    scanner.nextLine(); // vider le buffer
-                
+                    scanner.nextLine();                
                     TypeCourse type = null;
                     switch (typeChoix) {
                         case 1: type = TypeCourse.ALLER_SIMPLE; break;
@@ -92,14 +136,14 @@ public class MenuUtilisateur {
                 
                 break;
                 case 5:
-                System.out.print("🔍 Entrez le point de départ : ");
+                System.out.print(" Entrez le point de départ : ");
                 String pointDepart = scanner.nextLine().trim();
             
-                System.out.print("🔍 Entrez le point d'arrivée : ");
+                System.out.print(" Entrez le point d'arrivée : ");
                 String pointArrivee = scanner.nextLine().trim();
             
                 if (pointDepart.isEmpty() || pointArrivee.isEmpty()) {
-                    System.out.println("❌ Les champs de départ et d'arrivée ne doivent pas être vides.");
+                    System.out.println(" Les champs de départ et d'arrivée ne doivent pas être vides.");
                     break;
                 }
             
@@ -117,22 +161,20 @@ public class MenuUtilisateur {
                 }
             
                 if (resultats.isEmpty()) {
-                    System.out.println("🚫 Aucune course disponible pour ces critères.");
+                    System.out.println(" Aucune course disponible pour ces critères.");
                 } else {
-                    System.out.println("\n✅ --- Courses disponibles ---");
+                    System.out.println("\n --- Courses disponibles ---");
                     for (Course c : resultats) {
-                        System.out.println("🔸 ID : " + c.getId());
-                        System.out.println("👤 Chauffeur : " + c.getChauffeur().getNom());
-                        System.out.println("🚗 Type : " + c.getTypeCourse());
-                        System.out.println("📍 Départ : " + c.getItineraire().getPointDepart());
-                        System.out.println("🏁 Arrivée : " + c.getItineraire().getPointArrivee());
-                        System.out.println("🪑 Places restantes : " + c.placesRestantes());
+                        System.out.println(" ID : " + c.getId());
+                        System.out.println(" Chauffeur : " + c.getChauffeur().getNom());
+                        System.out.println(" Type : " + c.getTypeCourse());
+                        System.out.println(" Départ : " + c.getItineraire().getPointDepart());
+                        System.out.println(" Arrivée : " + c.getItineraire().getPointArrivee());
+                        System.out.println(" Places restantes : " + c.placesRestantes());
                         System.out.println("----------------------------");
                     }
                 }
                 break;
-                        
-
  case 6:
     boolean continuerGestion = true;
     while (continuerGestion) {
@@ -166,7 +208,6 @@ public class MenuUtilisateur {
                 utilisateur.getDisponibilites().ajouterMomentDisponibilite(jourAjout, momentAjout);
                 System.out.println("Disponibilité ajoutée !");
                 break;
-
             case 3:
                 System.out.print("Entrez le jour (ex: LUNDI, MARDI...) : ");
                 String jourSupprStr = scanner.nextLine().toUpperCase();
