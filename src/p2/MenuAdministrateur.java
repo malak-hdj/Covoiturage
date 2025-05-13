@@ -17,7 +17,7 @@ public class MenuAdministrateur {
         do {
         	System.out.println("=====Menu Administrateur====");
             System.out.println("1. Ajouter un utilisateur");
-            System.out.println("2. Supprimer un utilisateur");
+            System.out.println("2. bannir un utilisateur");
             System.out.println("3. Lister les utilisateurs");
             System.out.println("4. Rechercher un utilisateur (par nom ou matricule)");
             System.out.println("5. Filtrer les utilisateurs (par type et réputation)");
@@ -28,6 +28,7 @@ public class MenuAdministrateur {
             System.out.println("10. Afficher l’historique");
             System.out.println("11. Afficher les statistiques");
             System.out.println("12. Modifier un utilisateur");
+            System.out.println("13. Afficher la liste noire");
             System.out.println("0. Se déconnecter");
             System.out.print("Choix : ");
 
@@ -49,15 +50,16 @@ public class MenuAdministrateur {
             }
             break;
                 case 2:
-                    System.out.print("Nom de l'utilisateur à supprimer : ");
-                    String nomSupp = scanner.nextLine();
-                    Utilisateur uSupp = admin.rechercherUtilisateurParNom(nomSupp);
-                    if (uSupp != null) {
-                        admin.supprimerUtilisateur(uSupp);
-                        System.out.println("Utilisateur supprimé.");
-                    } else {
-                        System.out.println("Utilisateur introuvable.");
-                    }
+                	System.out.print("Matricule de l'utilisateur à bannir : ");
+                	String mat1 = scanner.nextLine();
+                	Utilisateur uASupprimer = admin.rechercherUtilisateurParMatricule(mat1);
+                	if (uASupprimer != null) {
+                	    admin.banirUtilisateur(mat1); 
+                	    System.out.println(" Utilisateur " + uASupprimer.getNom() + " (matricule: " + mat1 + ") a été banni avec succès.");
+                	} else {
+                	    System.out.println(" Aucun utilisateur trouvé avec le matricule : " + mat1);
+                	}
+            
                     break;
 
                 case 3:
@@ -188,6 +190,9 @@ public class MenuAdministrateur {
                         System.out.println("Utilisateur non trouvé.");
                     }
                     break;
+                case 13:
+                	admin.afficherListeNoire();
+                	break;
 
                 case 0:
                     System.out.println("Déconnexion...");
